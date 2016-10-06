@@ -1,3 +1,4 @@
+//The geolocation functions on phones, however does not on desktop web browsers as it does not accurately show the user's current location.
 <!DOCTYPE html>
 <html>
         <head>
