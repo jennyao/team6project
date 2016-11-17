@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+        <head>
+                <title>Student Geolocation</title>
+                        <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+                        <meta charset="utf-8">
+                        <style>
+                                html, body 
+                                {
+                                        height: 100%;
+                                        margin: 0;
+                                        padding: 0;
+                                }
+                                #map 
+                                {
+                                        height: 100%;
+                                }
+                        </style>
+                        <script src = "js/jquery-1.10.1.min.js"></script>
+                        <script src = "http://maps.google.com/maps/api/js?sensor=true"></script>
+                        <script src = "js/myScript.js"></script>
+        </head>
+        <body>
+                <div id="map"></div>
+                <script>
+                function initMap() 
+                {
+                        //Base case(?) geolocation should find geolocation fail
+                        var map = new google.maps.Map(document.getElementById('map'), {
+                        center: {lat: 38.559799, lng:  -121.422309},
+                        zoom: 18
+                });
+                var markerU = null;
+                function autoUpdate() 
+                {
+                        navigator.geolocation.getCurrentPosition(function(position) {  
+                                var newPoint = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                                if (markerU) 
+                                {
+                                        // Marker already created - Move it
+                                        markerU.setPosition(newPoint);
+                                }
+                                else 
+                                {
+                                        // Marker does not exist - Create it
+                                        markerU = new google.maps.Marker({
+                                        position: newPoint,
+                                        map: map,
+                                        title: 'User Location',
+                                        animation: google.maps.Animation.DROP
+                                });
+                        }
+                        // Center the map on the new position
+                        map.setCenter(newPoint);
+                }); 
+                // Call the autoUpdate() function every 10 seconds
+                setTimeout(autoUpdate, 10000);
+                }
+                autoUpdate();
+                        //Creates the marker, and provides LatLng for circle center
+                        var marker = new google.maps.Marker({
+                                map: map,
+								//Allows marker position to be changed
+                                draggable: true,
+                                position: new google.maps.LatLng(38.560908, -121.422227),
+                                title: 'Class Location',
+                                animation: google.maps.Animation.DROP
+                        });
+                        //Draws circle on displayed Google Map
+                        var circle = new google.maps.Circle({
+                                map: map,
+                                //21 (approximate) feet radius in meters
+                                radius: 7,
+                                fillColor: 'green',
+                                strokeColor: 'yellow'
+                        });
+                        circle.bindTo('center', marker, 'position');
+                }
+                </script>
+                <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhlrNH73wZlR5lhHly-bpoMMkAuNhp3Tw&callback=initMap">
+                </script>
+       </body>
+</html>
