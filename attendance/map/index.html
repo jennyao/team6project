@@ -23,6 +23,7 @@
         <body>
                 <div id="map"></div>
                 <script>
+		//Initializes the Google Map, setting center to University Union and zoom
                 function initMap() 
                 {
                         //Base case(?) geolocation should find geolocation fail
@@ -30,19 +31,24 @@
                         center: {lat: 38.559799, lng:  -121.422309},
                         zoom: 18
                 });
+		//User marker, used in determining the distance between the classroom and the student
                 var markerU = null;
                 function autoUpdate() 
                 {
+			//Google library function, retrieves user current position
                         navigator.geolocation.getCurrentPosition(function(position) {  
+				//Creates variable containing the latitude and longitude of the user
                                 var newPoint = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+				//If markerU (marker user) already exists, sets the marker to the new user position
                                 if (markerU) 
                                 {
-                                        // Marker already created - Move it
+                                        // Marker already created, move it
                                         markerU.setPosition(newPoint);
                                 }
+				//If markerU (...) does not exist
                                 else 
                                 {
-                                        // Marker does not exist - Create it
+                                        // Marker does not exist, create it
                                         markerU = new google.maps.Marker({
                                         position: newPoint,
                                         map: map,
@@ -53,27 +59,31 @@
                         // Center the map on the new position
                         map.setCenter(newPoint);
                 }); 
-                // Call the autoUpdate() function every 10 seconds
+                // Call the autoUpdate() function every 10 seconds, updates markerU to new position
                 setTimeout(autoUpdate, 10000);
                 }
                 autoUpdate();
                         //Creates the marker, and provides LatLng for circle center
                         var marker = new google.maps.Marker({
                                 map: map,
-								//Allows marker position to be changed
+				//Allows marker position to be changed
                                 draggable: true,
+				//Sets the default latitude and longitude to Riverside 2011(?)
                                 position: new google.maps.LatLng(38.560908, -121.422227),
                                 title: 'Class Location',
+				//Simple bounce animation for flair
                                 animation: google.maps.Animation.DROP
                         });
                         //Draws circle on displayed Google Map
                         var circle = new google.maps.Circle({
                                 map: map,
-                                //21 (approximate) feet radius in meters
-                                radius: 7,
+                                //20 (approximate) feet radius in meters
+                                radius: 10,
+				//Simple style, altering colors of the circle
                                 fillColor: 'green',
                                 strokeColor: 'yellow'
                         });
+			//Binds the circle's center to the class marker
                         circle.bindTo('center', marker, 'position');
                 }
                 </script>
