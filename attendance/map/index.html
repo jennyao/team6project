@@ -37,9 +37,9 @@
                 {
 			//Google library function, retrieves user current position
                         navigator.geolocation.getCurrentPosition(function(position) {  
-				//Creates variable containing the latitude and longitude of the user
+				//Used primarily to display markerU on the map
                                 var newPoint = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-				//If markerU (marker user) already exists, sets the marker to the new user position
+				//If markerU (marker user) already exists, changes the position
                                 if (markerU) 
                                 {
                                         // Marker already created, move it
@@ -59,7 +59,8 @@
                         // Center the map on the new position
                         map.setCenter(newPoint);
                 }); 
-                // Call the autoUpdate() function every 10 seconds, updates markerU to new position
+                //Call the autoUpdate() function every 10 seconds, updates markerU to new position
+		//Can be adjusted, divide by 1000 (miliseconds) to get the time in seconds
                 setTimeout(autoUpdate, 10000);
                 }
                 autoUpdate();
