@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.awt.Desktop;
+import java.net.URI;
+
+import java.net.URISyntaxException;
 
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
@@ -18,8 +22,32 @@ import com.google.api.services.sheets.v4.model.UpdateCellsRequest;
 
 public class Helpers extends GoogleStuff {
 	
+	public void redUrl(){
+        String url = "https://docs.google.com/spreadsheets/d/1uOa1xu8k47jSzVswPsb_KMhH1vQ2-YWGCKyoDKBccLk/edit#gid=1900717557";
+        if(Desktop.isDesktopSupported()){
+            Desktop desktop = Desktop.getDesktop();
+            try {
+                desktop.browse(new URI(url));
+            }
+            catch (IOException e) {
+            } catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+     }
+	public String makeId(){
+			String text = "";
+			for (int i=0; i < 3; i++) {
+				text += Math.round(Math.random()*9);
+			}
+		    return text;
+			
+		
+	}
+	
 	public String getDate() {
-		SimpleDateFormat date = new SimpleDateFormat("M/dd/yyyy");
+		SimpleDateFormat date = new SimpleDateFormat("M/d/yyyy");
 		return date.format(new Date());
 	}
 	
@@ -78,6 +106,7 @@ public class Helpers extends GoogleStuff {
 		
 		BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest().setRequests(requests);
 		service.spreadsheets().batchUpdate(spreadsheetId, batchUpdateRequest).execute();
+
 	}
 	
 }

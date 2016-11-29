@@ -9,92 +9,120 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.api.services.sheets.v4.model.*;
 import com.google.api.services.sheets.v4.Sheets;
 
-/**
- * Servlet implementation class CheckIn
- */
+//Servlet implementation class CheckIn
 public class CheckIn extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public CheckIn() {
-        super();
-        // TODO Auto-generated constructor stub
+    public CheckIn(){
+        super(); // TODO Auto-generated constructor stub
     }
-
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-
-		String studentId = request.getParameter("studentId");					// inputs from index.jsp
+		// inputs from index.jsp
+		String studentId = request.getParameter("studentId");
 		String key = request.getParameter("key");
-		
-		if (("").equals(studentId) || ("").equals(key)) {								// check for inputs; no inputs; error
-			request.setAttribute("error", "MISSING INPUTS!");
-			request.getRequestDispatcher("index.jsp").forward(request, response);
-		} else {																// inputs; continue
-			Helpers gs = new Helpers();
-			Sheets service = gs.getSheetsService();
-			String spreadsheetId = "1xM90oj3BDOuQNvDU-T0W1BleX9TKHJ-ElyXVlzp29ig";
-			String range = "csc-131-2-attandance!A1:Z";
-			int sheetId = 1764605134;
-			ValueRange sheet = service.spreadsheets().values().get(spreadsheetId, range).execute();
-			List<List<Object>> values = sheet.getValues();
-			
-			int columnID = 3;													// sheet setup
-			int rowDate = 0;
-			int rowKey = 40;
-			
-			String date = gs.getDate();
-			String time = gs.getTime();
+		String AdminId = request.getParameter("AdminId");
+		String AdminKey = request.getParameter("AdminKey");
+		String spreadsheetId = "1uOa1xu8k47jSzVswPsb_KMhH1vQ2-YWGCKyoDKBccLk";
+		String range = "csc131!A1:Z";
+		String timeBegin = "01:30 PM";
+		String timeEnd = "02:45 AM";
+		Helpers gs = new Helpers();
+		Sheets service = gs.getSheetsService();
+		String date = gs.getDate();
+		String time = gs.getTime();
+		int sheetId = 2142932724;
+		int columnID = 3;													
+		int rowDate = 0;
+		int rowKey = 40;
 
-			String timeBegin = "01:30 PM";
-			String timeEnd = "02:45 PM";
-//			System.out.println("int end: %i" + Integer.parseInt(timeEnd));
-//			System.out.println("int time: %i" + Integer.parseInt(time));
-			
-			System.out.println("begin to t: " + timeBegin.compareTo(time) + " t to end: " + time.compareTo(timeEnd));
-			if (timeBegin.compareTo(time) <= 0 && time.compareTo(timeEnd) <= 0) 
-				System.out.println("Time: " + time + " true");
+		// Student Login
+		if(  !(("").equals(studentId)||("").equals(key))  &&  !(studentId==null || key==null)  
+				&& studentId.length()==9){		
+			//#1 - Set sheet and Values
+			ValueRange sheet = service.spreadsheets().values().get(spreadsheetId, range).execute();
+			List<List<Object>> values = sheet.getValues();	
 			
 			int columnDate = gs.searchColumn(values, rowDate, date);
-			if (columnDate < 0) {												// check for date; date not found; error
-				request.setAttribute("error", "NO CLASS IN SESSION!");
-				request.getRequestDispatcher("index.jsp").forward(request, response);				
-			} else {															// date found; continue
-				int rowStudent = gs.searchRow(values, columnID, studentId);
-				if (rowStudent < 0) {											// check for student; student not found; error
-					request.setAttribute("error", "ID NOT FOUND!");
+			int rowStudent = gs.searchRow(values, columnID, studentId);
+		
+			System.out.println("begin to t: " + timeBegin.compareTo(time) + " t to end: " + time.compareTo(timeEnd));
+			if (timeBegin.compareTo(time) <= 0 && time.compareTo(timeEnd) <= 0){
+				System.out.println("Time: " + time + " true");
+			}
+			if (columnDate < 0) {												
+				request.setAttribute("error", "CLASS NOT IN SESSION!");
+				request.getRequestDispatcher("index.jsp").forward(request, response);	
+			}else{
+				if (rowStudent < 0){											
+					request.setAttribute("error", "No User");
 					System.out.println(values.get(17).get(columnID).equals(studentId));
-					System.out.println(studentId);
 					request.getRequestDispatcher("index.jsp").forward(request, response);
-				} else { 														// student found; continue
-					if (values.get(rowStudent).get(columnDate).equals("Y")) {	// check for status; already checked in; error
-						request.setAttribute("error", "YOU ALREADY CHECKED IN!");
+				}else{
+					if (!values.get(rowKey).get(columnDate).equals(key)) {	
+						request.setAttribute("error", "WRONG KEY!");
 						request.getRequestDispatcher("index.jsp").forward(request, response);
-					} else {													// has not checked in; continue
-						if (!values.get(rowKey).get(columnDate).equals(key)) {	// check for key; wrong key; error
-							request.setAttribute("error", "WRONG KEY!");
+					}else{
+						if (values.get(rowStudent).get(columnDate).equals("Y")) {	
+							request.setAttribute("error", "YOU ALREADY CHECKED IN!");
 							request.getRequestDispatcher("index.jsp").forward(request, response);
-						} else {												// correct key; check in; end!
+						}else{
 							gs.update(service, spreadsheetId, sheetId, rowStudent, columnDate, "Y");
 							request.setAttribute("error", "UPDATED!");
 							request.getRequestDispatcher("index.jsp").forward(request, response);
-						}
+						}//updated
+					}//already checked in
+				}// wrongkey
+			}// no user
+		}//if its a student	
+		else{ 
+			if(  !(("").equals(AdminId)||("").equals(AdminKey))   &&   !(AdminId==null || AdminKey==null)
+					&& AdminId.length()==9){
+				studentId = AdminId;
+				key = AdminKey;
+				range = "AdminLogin!A1:Z";
+				sheetId = 1900717557;
+				
+				ValueRange sheet = service.spreadsheets().values().get(spreadsheetId, range).execute();
+				List<List<Object>> values = sheet.getValues();	
+				
+				int columnDate = gs.searchColumn(values, rowDate, date);
+				int rowStudent = gs.searchRow(values, columnID, studentId);	
+							
+				if (rowStudent < 0){											
+					request.setAttribute("error", "No User");
+					System.out.println(values.get(17).get(columnID).equals(studentId));
+					request.getRequestDispatcher("index.jsp").forward(request, response);
+				}else{
+					if (!values.get(rowKey).get(columnDate).equals(key)) {	
+						request.setAttribute("error", "WRONG KEY!");
+						request.getRequestDispatcher("index.jsp").forward(request, response);
 					}
-				}
-			}
-		}
-	}
-
+					else{
+						getServletContext().getRequestDispatcher("/adminSuccess.jsp").forward(request, response);
+						return;
+						//request.getRequestDispatcher("/adminSuccess.jsp");
+						//gs.redUrl();
+					}//redirecting url to google sheets
+				}//Wrong Key
+			}//If its an Admin
+			request.setAttribute("error", "MISSING INPUTS!");
+			request.getRequestDispatcher("index.jsp").forward(request, response);
+		}//else	
+		//Missing inputs for either Admin or Student
+	}//doGet
+	
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
-	}
-}
+	}//doPost
+}//Entire class

@@ -10,8 +10,24 @@
   	<description></description>
   	<servlet-class>com.team6.project.CheckIn</servlet-class>
   </servlet>
+  
   <servlet-mapping>
   	<servlet-name>CheckIn</servlet-name>
   	<url-pattern>/CheckIn</url-pattern>
   </servlet-mapping>
+
+  
+  <display-name>Archetype2</display-name>
+  <servlet>
+  	<servlet-name>AdminL</servlet-name>
+  	<display-name>AdminL</display-name>
+  	<description></description>
+  	<servlet-class>com.team6.project.AdminL</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>AdminL</servlet-name>
+  	<url-pattern>/AdminL</url-pattern>
+  </servlet-mapping>
+ 
 </web-app>
